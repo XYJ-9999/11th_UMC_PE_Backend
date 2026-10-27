@@ -42,4 +42,4 @@ INSERT IGNORE INTO member (member_id, email, password, nickname) VALUES
 INSERT IGNORE INTO rating (rating_id, member_id, movie_id, score, comment, created_at, updated_at) VALUES
   (1, 1, 550, 5, '최고의 영화!', '2026-08-26 10:00:00', '2026-08-26 10:00:00'),
   (2, 1, 155, 4, '다시 봐도 명작', '2026-08-27 10:00:00', '2026-08-27 10:00:00'),
-  (3, 2, 550, 3, '호불호가 갈릴 것 같아요', '2026-08-26 11:00:00', '2026-08-26 11:00:00');
+  (3, 2, 550, 3, '호불호가 갈릴 것 같아요', '2026-08-26 11:00:00', '2026-08-26 11:00:00'); 
