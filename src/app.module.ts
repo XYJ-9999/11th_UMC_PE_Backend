@@ -16,7 +16,7 @@ import { Favorite } from './favorite/entities/favorite.entity';
       password: process.env.DB_PASSWORD ?? '',
       database: process.env.DB_DATABASE ?? 'umc_movie',
       entities: [Member, Rating, Favorite],
-      synchronize: process.env.NODE_ENV !== 'production',
+      synchronize: false,
       charset: 'utf8mb4',
     }),
     MemberModule,

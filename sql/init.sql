@@ -1,45 +1,42 @@
 CREATE DATABASE IF NOT EXISTS umc_movie
-  CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
-
+  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE umc_movie;
 
 CREATE TABLE IF NOT EXISTS member (
-  member_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  email VARCHAR(254) NOT NULL UNIQUE,
+  member_id INT NOT NULL AUTO_INCREMENT,
+  email VARCHAR(255) NOT NULL,
   password VARCHAR(60) NOT NULL,
-  nickname VARCHAR(50) NOT NULL UNIQUE,
-  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+  nickname VARCHAR(12) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (member_id),
+  UNIQUE KEY uq_member_email (email),
+  UNIQUE KEY uq_member_nickname (nickname)
+) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS rating (
-  rating_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  member_id BIGINT NOT NULL,
-  movie_id BIGINT NOT NULL,
-  score TINYINT NOT NULL,
-  comment TEXT NULL,
-  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  CONSTRAINT fk_rating_member FOREIGN KEY (member_id) REFERENCES member(member_id),
-  UNIQUE KEY uk_rating_member_movie (member_id, movie_id)
-);
+  rating_id INT NOT NULL AUTO_INCREMENT,
+  member_id INT NOT NULL,
+  movie_id INT NOT NULL,
+  score TINYINT UNSIGNED NOT NULL,
+  comment VARCHAR(500) NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (rating_id),
+  UNIQUE KEY uq_rating_member_movie (member_id, movie_id),
+  CONSTRAINT fk_rating_member FOREIGN KEY (member_id)
+    REFERENCES member(member_id) ON DELETE CASCADE,
+  CONSTRAINT chk_rating_score CHECK (score BETWEEN 1 AND 5)
+) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS favorite (
-  favorite_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  member_id BIGINT NOT NULL,
-  movie_id BIGINT NOT NULL,
-  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  CONSTRAINT fk_favorite_member FOREIGN KEY (member_id) REFERENCES member(member_id),
-  UNIQUE KEY uk_favorite_member_movie (member_id, movie_id)
-);
+  favorite_id INT NOT NULL AUTO_INCREMENT,
+  member_id INT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (favorite_id),
+  CONSTRAINT fk_favorite_member FOREIGN KEY (member_id)
+    REFERENCES member(member_id) ON DELETE CASCADE
+) ENGINE=InnoDB;
 
-INSERT IGNORE INTO member (member_id, email, password, nickname) VALUES
-  (1, 'noco@umc.com', '$2a$10$dummyEncodedPasswordValue', '수현'),
-  (2, 'minseo@umc.com', '$2a$10$dummyEncodedPasswordValue', '민서');
-
-INSERT IGNORE INTO rating (rating_id, member_id, movie_id, score, comment, created_at, updated_at) VALUES
-  (1, 1, 550, 5, '최고의 영화!', '2026-08-26 10:00:00', '2026-08-26 10:00:00'),
-  (2, 1, 155, 4, '다시 봐도 명작', '2026-08-27 10:00:00', '2026-08-27 10:00:00'),
-  (3, 2, 550, 3, '호불호가 갈릴 것 같아요', '2026-08-26 11:00:00', '2026-08-26 11:00:00'); 
+-- 테스트 회원은 POST /members/signup으로 생성하세요.
+-- 평점 API 테스트는 회원가입 응답의 memberId를 사용하세요.
