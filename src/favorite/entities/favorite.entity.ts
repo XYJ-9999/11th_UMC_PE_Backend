@@ -1,31 +1,18 @@
 import {
-  CreateDateColumn,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  Column,
-  UpdateDateColumn,
-  Unique,
+  Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Member } from '../../member/entities/member.entity';
 
-@Entity({ name: 'favorite' })
-@Unique('uk_favorite_member_movie', ['member', 'movieId'])
+@Entity('favorite')
 export class Favorite {
-  @PrimaryGeneratedColumn({ name: 'favorite_id', type: 'bigint' })
-  favoriteId: string;
+  @PrimaryGeneratedColumn({ name: 'favorite_id', type: 'int' })
+  favoriteId: number;
 
   @ManyToOne(() => Member, (member) => member.favorites, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'member_id', referencedColumnName: 'memberId' })
   member: Member;
 
-  @Column({ name: 'movie_id', type: 'bigint' })
-  movieId: string;
-
-  @CreateDateColumn({ name: 'created_at', type: 'datetime' })
+  // 영화 메타데이터는 외부 TMDB를 사용하므로 movie 테이블 FK를 두지 않음.
+  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at', type: 'datetime' })
-  updatedAt: Date;
 }
