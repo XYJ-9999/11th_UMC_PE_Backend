@@ -1,0 +1,136 @@
+{
+  "info": {
+    "name": "Movie Rating API - JWT Auth",
+    "_postman_id": "c38cc43a-91f7-4d56-b85a-3d5c8aaf7e10",
+    "description": "회원 A/B 가입 및 로그인, 토큰 인증/인가, 평점 CRUD 검증",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "tokenA", "value": "" },
+    { "key": "tokenB", "value": "" },
+    { "key": "ratingId", "value": "" },
+    { "key": "memberAEmail", "value": "a@umc.com" },
+    { "key": "memberBEmail", "value": "b@umc.com" },
+    { "key": "password", "value": "Demo1234!" }
+  ],
+  "item": [
+    {
+      "name": "1. 회원 A 회원가입",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"email\":\"{{memberAEmail}}\",\"nickname\":\"회원A\",\"password\":\"{{password}}\"}" },
+        "url": "{{baseUrl}}/members/signup"
+      }
+    },
+    {
+      "name": "2. 회원 B 회원가입",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"email\":\"{{memberBEmail}}\",\"nickname\":\"회원B\",\"password\":\"{{password}}\"}" },
+        "url": "{{baseUrl}}/members/signup"
+      }
+    },
+    {
+      "name": "3. 회원 A 로그인 - tokenA 저장",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('로그인 성공', function () { pm.response.to.have.status(200); });",
+          "const body = pm.response.json();",
+          "pm.collectionVariables.set('tokenA', body.result.accessToken);"
+        ]}
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"email\":\"{{memberAEmail}}\",\"password\":\"{{password}}\"}" },
+        "url": "{{baseUrl}}/auth/login"
+      }
+    },
+    {
+      "name": "4. 회원 B 로그인 - tokenB 저장",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('로그인 성공', function () { pm.response.to.have.status(200); });",
+          "const body = pm.response.json();",
+          "pm.collectionVariables.set('tokenB', body.result.accessToken);"
+        ]}
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\"email\":\"{{memberBEmail}}\",\"password\":\"{{password}}\"}" },
+        "url": "{{baseUrl}}/auth/login"
+      }
+    },
+    {
+      "name": "5. 토큰 A로 내 정보 조회",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{tokenA}}" }],
+        "url": "{{baseUrl}}/members/me"
+      }
+    },
+    {
+      "name": "6. 토큰 없이 내 정보 조회 - 401",
+      "request": { "method": "GET", "url": "{{baseUrl}}/members/me" }
+    },
+    {
+      "name": "7. 토큰 A로 평점 등록 - memberId 없음",
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('201 Created', function () { pm.response.to.have.status(201); });",
+          "const body = pm.response.json();",
+          "pm.collectionVariables.set('ratingId', body.result.ratingId);",
+          "pm.test('응답에 ratingId 존재', function () { pm.expect(body.result.ratingId).to.exist; });"
+        ]}
+      }],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{tokenA}}" }
+        ],
+        "body": { "mode": "raw", "raw": "{\"movieId\":1001,\"score\":9,\"comment\":\"좋은 영화였습니다.\"}" },
+        "url": "{{baseUrl}}/ratings"
+      }
+    },
+    {
+      "name": "8. 토큰 B로 A의 평점 수정 시도 - 403",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{tokenB}}" }
+        ],
+        "body": { "mode": "raw", "raw": "{\"score\":7,\"comment\":\"다른 회원의 수정 시도\"}" },
+        "url": "{{baseUrl}}/ratings/{{ratingId}}"
+      }
+    },
+    {
+      "name": "9. 토큰 A로 본인 평점 수정",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{tokenA}}" }
+        ],
+        "body": { "mode": "raw", "raw": "{\"score\":8,\"comment\":\"수정 완료\"}" },
+        "url": "{{baseUrl}}/ratings/{{ratingId}}"
+      }
+    },
+    {
+      "name": "10. 토큰 A로 본인 평점 삭제 - 204",
+      "request": {
+        "method": "DELETE",
+        "header": [{ "key": "Authorization", "value": "Bearer {{tokenA}}" }],
+        "url": "{{baseUrl}}/ratings/{{ratingId}}"
+      }
+    }
+  ]
+}
