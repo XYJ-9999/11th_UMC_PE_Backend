@@ -1,4 +1,4 @@
-import { Member } from '../entities/member.entity';
+import { Member } from "../entities/member.entity";
 
 export class MemberResponseDto {
   email: string;

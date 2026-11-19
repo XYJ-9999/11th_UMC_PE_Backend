@@ -7,31 +7,31 @@ import {
   PrimaryGeneratedColumn,
   Unique,
   UpdateDateColumn,
-} from 'typeorm';
-import { Member } from '../../member/entities/member.entity';
+} from "typeorm";
+import { Member } from "../../member/entities/member.entity";
 
-@Entity('ratings')
-@Unique('uq_rating_member_movie', ['member', 'movieId'])
+@Entity("ratings")
+@Unique("uq_rating_member_movie", ["member", "movieId"])
 export class Rating {
-  @PrimaryGeneratedColumn({ name: 'rating_id', type: 'int' })
+  @PrimaryGeneratedColumn({ name: "rating_id", type: "int" })
   ratingId: number;
 
-  @ManyToOne(() => Member, (member) => member.ratings, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'member_id' })
+  @ManyToOne(() => Member, (member) => member.ratings, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "member_id" })
   member: Member;
 
-  @Column({ name: 'movie_id', type: 'int' })
+  @Column({ name: "movie_id", type: "int" })
   movieId: number;
 
-  @Column({ type: 'tinyint' })
+  @Column({ type: "tinyint" })
   score: number;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: "text", nullable: true })
   comment: string | null;
 
-  @CreateDateColumn({ name: 'created_at', type: 'datetime' })
+  @CreateDateColumn({ name: "created_at", type: "datetime" })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'datetime' })
+  @UpdateDateColumn({ name: "updated_at", type: "datetime" })
   updatedAt: Date;
 }
