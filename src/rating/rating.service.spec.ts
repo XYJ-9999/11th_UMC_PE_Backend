@@ -16,7 +16,11 @@ describe("RatingService", () => {
   };
   const memberRepository = { findOne: jest.fn() };
 
-  const member = { memberId: 1, email: "user@example.com", nickname: "영화조아" } as Member;
+  const member = {
+    memberId: 1,
+    email: "user@example.com",
+    nickname: "영화조아",
+  } as Member;
 
   beforeEach(async () => {
     jest.clearAllMocks();
