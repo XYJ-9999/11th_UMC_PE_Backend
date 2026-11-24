@@ -15,7 +15,10 @@ export class Favorite {
   @PrimaryGeneratedColumn({ name: "favorite_id" })
   favoriteId: number;
 
-  @ManyToOne(() => Member, (member) => member.favorites, { nullable: false, onDelete: "CASCADE" })
+  @ManyToOne(() => Member, (member) => member.favorites, {
+    nullable: false,
+    onDelete: "CASCADE",
+  })
   @JoinColumn({ name: "member_id" })
   member: Member;
 
