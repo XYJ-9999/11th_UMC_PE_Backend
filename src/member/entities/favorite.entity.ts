@@ -1,27 +1,30 @@
-// src/entity/favorite.entity.ts
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   Unique,
 } from "typeorm";
-import { BaseTimeEntity } from "./base-time.entity";
 import { Member } from "./member.entity";
 
 @Entity("favorite")
 @Unique("uk_favorite_member_movie", ["member", "movieId"])
-export class Favorite extends BaseTimeEntity {
+export class Favorite {
   @PrimaryGeneratedColumn({ name: "favorite_id" })
   favoriteId: number;
 
-  // 즐겨찾기의 주인은 로그인한 회원입니다.
-  @ManyToOne(() => Member, { nullable: false })
+  @ManyToOne(() => Member, (member) => member.favorites, {
+    nullable: false,
+    onDelete: "CASCADE",
+  })
   @JoinColumn({ name: "member_id" })
   member: Member;
 
-  // TMDB의 영화 ID를 그대로 저장합니다. 우리 DB의 외래 키는 아닙니다.
-  @Column({ name: "movie_id" })
+  @Column({ name: "movie_id", type: "int" })
   movieId: number;
+
+  @CreateDateColumn({ name: "created_at", type: "datetime" })
+  createdAt: Date;
 }

@@ -5,11 +5,13 @@ import { Favorite } from "./entities/favorite.entity";
 import { Member } from "./entities/member.entity";
 import { MemberController } from "./member.controller";
 import { MemberService } from "./member.service";
+import { FavoriteController } from "./favorite.controller";
+import { FavoriteService } from "./favorite.service";
 
 @Module({
   imports: [TypeOrmModule.forFeature([Member, Favorite])],
-  controllers: [MemberController],
-  providers: [MemberService, JwtAuthGuard],
+  controllers: [MemberController, FavoriteController],
+  providers: [MemberService, FavoriteService, JwtAuthGuard],
   exports: [MemberService],
 })
 export class MemberModule {}
